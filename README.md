@@ -306,14 +306,9 @@ Start the app again:
 npm start
 ```
 
-You should see the following in the console output:
+You should see the same console output, but now you should see the window created with text displaying the versions of software components:
 
-```bash
-> electron-todo@1.0.0 start
-> electron .
-
-> App is ready!
-```
+![Application window](./img/app-window.png)
 
 ## Add todo functionality 
 
