@@ -4,7 +4,8 @@
   "description": "Simple Electron Todo app",
   "main": "main.js",
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",

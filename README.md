@@ -1,11 +1,11 @@
 # electron-todo
-Simple electron todo app made with electron
+Simple todo app made with Electron
 
 # About electron-todo
 
 This app is basic electron app showing todo functionality.
 
-A basic Electron application needs just these files:
+A basic electron.js application needs just these files:
 
 - `package.json` - Points to the app's main file and lists its details and dependencies.
 - `main.js` - Starts the app and creates a browser window to render HTML. This is the app's main process.
