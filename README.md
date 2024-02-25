@@ -52,7 +52,7 @@ Note: If you're using Linux Bash for Windows, see [this guide](https://www.howto
 
 Use [these instructions](https://www.electronjs.org/docs/latest/tutorial/quick-start#prerequisites) from Electron documentation to install Node.js.
 
-## Create and start basic Electron app
+## Create basic Electron app
 
 Next, create the basic app using [these instructions](https://www.electronjs.org/docs/latest/tutorial/quick-start#create-your-application), but use `electron-todo` name for your folder name:
 
@@ -118,13 +118,42 @@ Add start command to your `package.json` file:
   },
 ```
 
+### Add source files for electron app
+
+```bash
+touch main.js
+mkdir src
+cd src
+touch index.html renderer.js
+```
+
+First, we test `main.js` is running.
+
+Add following to `main.js`:
+```javascript
+const {app, BrowserWindow } = require ('electron')
+
+app.on('ready', () => {
+    console.log('> App is ready!')
+})
+```
+
 Start the app using this command:
 
 ```bash
 npm start
 ```
 
-# Adding todo functionality
+You should see the following in the console output:
+
+```bash
+> electron-todo@1.0.0 start
+> electron .
+
+> App is ready!
+```
+
+# Add todo functionality 
 
 `TODO`
 
