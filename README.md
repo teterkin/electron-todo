@@ -1,9 +1,15 @@
 # electron-todo
-Simple todo app made with Electron
+Simple todo app made with Electron.
 
 # About electron-todo
 
 This app is basic electron app showing todo functionality.
+
+My goal is to create something simple, but still it should have at least some usefulness: in our case it will be a todo app.
+
+README has a **"Quick start"** section, to *get the code and run it*.
+
+But also it has a **"Learning the hard way"** section, where novice Electron users can *learn the Electron app development process gradually*: step by step.
 
 A basic electron.js application needs just these files:
 
@@ -124,7 +130,7 @@ Add start command to your `package.json` file:
 touch main.js
 mkdir src
 cd src
-touch index.html renderer.js
+touch index.html preload.js renderer.js style.css
 ```
 
 First, we test `main.js` is running.
@@ -153,7 +159,163 @@ You should see the following in the console output:
 > App is ready!
 ```
 
-# Add todo functionality 
+## Add Browser Process
+
+In order to add Browser process to our app we need to prepare four things:
+
+1. We need to fill our `index.html` file to display some text in Browser window.
+2. We need to fill our `style.css` file to make out app beautiful.
+3. We need to fill our `preload.js` file to change HTML file dynamically.
+4. We need to modify our `main.js` file to load those new components above and do some additional useful stuff.
+
+### index.html
+
+First, let's add code to our `index.html` file we created in `src` folder:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <title>Hello Electron World!</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    This Electron app is using following software components:
+    <ul>
+        <li>Node.js&nbsp; ver. <span id="node-version"></span>;</li>
+        <li>Chromium ver. <span id="chrome-version"></span>;</li>
+        <li>Electron ver. <span id="electron-version"></span>.</li>
+    </ul>
+  </body>
+</html>
+```
+
+Note, this code has some placeholders designated with `<span id="<Some_ID>"></span>` *HTML* spans. We will use JavaScript code later to fill these placeholders with actual versions for Node.js, Chromium and Electron.
+
+Also note that at the end of the header section we added link to our `style.css` file.
+
+### style.css
+
+This file is pretty simple:
+
+```css
+body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: larger;
+}
+
+span {
+    color: red;
+}
+```
+
+It just makes default font to larger monospace font and paints span sections of the document with red color.
+
+### preload.js
+
+Add content to our `preload.js` file:
+
+```javascript
+window.addEventListener('DOMContentLoaded', () => {
+  const replaceText = (selector, text) => {
+    const element = document.getElementById(selector)
+    if (element) element.innerText = text
+  }
+
+  for (const dependency of ['chrome', 'node', 'electron']) {
+    replaceText(`${dependency}-version`, process.versions[dependency])
+  }
+})
+```
+
+This file will be run just before the renderer process is loaded. It has access to both renderer globals (e.g. window and document) and a Node.js environment (to do some fancy stuff).
+
+Particularly here we adding Event Listener on 'DOMContentLoaded' event. When fired, it will create a function and run the function from the for loop.
+
+Function gets two attributes (selector name and text to replace with) and do simple replacement of inner text of particular selector with the text specified. 
+
+The for loop goes through all the software components we need (chrome, node, electron) and run the function created specifying selector name and version, getting those versions from global `process` object.
+
+### main.js
+
+First, we need to add path module to our `main.js` file. Add it to the top of the file, next to first line:
+
+```javascript
+const path = require('node:path')
+```
+
+Next we add `createWindow` function (which will be run on app `whenReady` event later):
+
+```javascript
+const createWindow = () => {
+  // Create the browser window.
+  const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+
+  // and load the index.html of the app.
+  mainWindow.loadFile('index.html')
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+}
+```
+
+Now let's add listener which fill be fired on app `whenReady` event.
+
+We will add some extra code for application to run smoothly on any supported platform.
+
+Place the following code at the end of `main.js` file:
+
+```javascript
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.whenReady().then(() => {
+  createWindow()
+
+  app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+})
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit()
+})
+
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and require them here.
+```
+
+Start the app again:
+
+```bash
+npm start
+```
+
+You should see the following in the console output:
+
+```bash
+> electron-todo@1.0.0 start
+> electron .
+
+> App is ready!
+```
+
+## Add todo functionality 
 
 `TODO`
 
